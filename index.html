@@ -1334,5 +1334,52 @@ window.__NM = {
   }
 };
 </script>
+
+<!-- benchmark comparison panel: same published leaderboard as the Tensor Atlas v4 pages -->
+<div id="bench-panel" style="display:none;margin:14px 0 0;padding:12px;border:1px solid #22301f;border-radius:8px;background:#0d120c;font:12px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#E8EDE8">
+  <div style="font:10px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;color:#7C8A7C;text-transform:uppercase">Benchmark comparison / as published</div>
+  <div style="font-size:17px;margin:6px 0 2px;color:#F2F6F2">Capability, <em style="font-family:Georgia,serif">as published.</em></div>
+  <div style="color:#A9B6A9;margin-bottom:10px">Scores collected from each model&rsquo;s own card by the original atlas page. This page measures bytes and claims no scores of its own; Nemotron-3.5-Lightning-30B-A3B has no row in this set.</div>
+  <label style="display:block;margin-bottom:6px;color:#A9B6A9">Compare a benchmark
+    <select id="bench-select" style="display:block;width:100%;margin-top:4px;padding:6px 8px;background:#12180f;color:#E8EDE8;border:1px solid #22301f;border-radius:6px"></select>
+  </label>
+  <div id="bench-rows"></div>
+  <div id="bench-fine" style="color:#7C8A7C;font-size:11px;margin-top:8px"></div>
+</div>
+<script>
+(function(){
+  const BENCH = [['GPQA Diamond','Reasoning',[93.4,94.1,92.9,88.1,92.4,89.9,90.9]],['Terminal-Bench 2.1','Agentic',[89.1,88.8,88.3,88.2,87.9,82.7,90.6]],['Terminal-Bench 3.0','Agentic',[43.3,34.4,17.7,28.3,11.8,7.6,30]],['Terminal-Bench 4.0','Agentic',[51.8,39.9,12.6,37.9,12.4,7,31.2]],['DeepSWE v1.1','Agentic',[74,73,67.5,66.9,62.7,54.4,74.2]],['ProgramBench','Agentic',[37,23,17.5,19,15.5,null,20.3]],['NL2Repo-Bench','Agentic',[75.3,56.8,58,58,61.5,54.2,64]],['CyberGym','Agentic',[null,84.5,80,84.5,83.3,76.7,88.1]],['SEC-Bench Pro','Agentic',[null,74.3,null,null,56.4,30.9,62.8]],['ExploitGym','Agentic',[22.1,33.7,null,15,5.4,1.8,15.3]],['HLE with tools','Agentic',[63.6,null,59.8,62.5,60,51.5,63.9]],['AutomationBench','Agentic',[50.3,45.8,46.7,48.8,43.2,37.7,54.8]],['Agent\'s Last Exam','Agentic',[28.6,26.7,27.6,28.5,25.7,25.2,31.8]],['Chartography with tools','Visual',[84,79.9,68.1,null,null,null,78.9]],['BabyVision with tools','Visual',[94.1,88.9,85.7,null,null,null,89.6]],['ZeroBench-main (Pass@5)','Visual',[52,53,41,null,null,null,49]]];
+  const MODELS = ['Opus-5.0','GPT-5.6 Sol','K3','GLM-5.3','DS V4 Pro','DS V4 Flash','DS V4.1 Flash'];
+  const ACCENT = ['#8CA9FF','#43CDA8','#FF7FA5','#C79BFF','#FFB248','#4FC8E8','#9AAABB'];
+  function bar(v){ return v===null? 'Not reported' : v.toFixed(1); }
+  function render(i){
+    const b = BENCH[i], host = document.getElementById('bench-rows');
+    host.innerHTML = MODELS.map(function(name, k){
+      const v = b[2][k], w = Math.max(0, Math.min(100, (v || 0)));
+      return '<div style="margin:7px 0"><div style="display:flex;justify-content:space-between;gap:8px">'
+        + '<span style="color:#C8D3C8">' + name + '</span><b style="color:#E8EDE8">' + bar(v) + '</b></div>'
+        + '<div style="height:5px;background:#161d14;border-radius:3px;overflow:hidden;margin-top:3px">'
+        + '<i style="display:block;height:100%;width:' + w + '%;background:' + ACCENT[k % ACCENT.length] + ';opacity:' + (v===null?0.15:0.9) + '"></i></div></div>';
+    }).join('');
+    document.getElementById('bench-fine').textContent =
+      b[0] + ' / ' + b[1] + '. Publisher-reported scores on each benchmark\u2019s own scale; values are not reproduced by this page.';
+  }
+  function mount(){
+    const panel = document.getElementById('bench-panel');
+    const side = document.querySelector('.side-body') || document.querySelector('.side');
+    if (!side) { setTimeout(mount, 300); return; }
+    if (panel.parentElement !== side) side.insertBefore(panel, side.firstChild);
+    panel.style.display = 'block';
+    const sel = document.getElementById('bench-select');
+    if (!sel.options.length) {
+      BENCH.forEach(function(b, i){ const o = document.createElement('option'); o.value = i; o.textContent = b[0]; sel.appendChild(o); });
+      sel.addEventListener('change', function(){ render(Number(sel.value)); });
+      render(Number(sel.value) || 0);
+    }
+  }
+  if (document.readyState !== 'loading') mount(); else window.addEventListener('DOMContentLoaded', mount);
+})();
+</script>
+
 </body>
 </html>
