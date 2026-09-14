@@ -1,0 +1,80 @@
+{
+ "model": {
+  "repo_bf16": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+  "repo_nvfp4": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+  "arch": "NemotronHForCausalLM (hybrid Mamba-2 + Attention + MoE)",
+  "layers": 52,
+  "layer_types": {
+   "mamba": 23,
+   "moe": 23,
+   "attention": 6
+  },
+  "attention_layers": [
+   5,
+   12,
+   19,
+   26,
+   33,
+   42
+  ],
+  "experts": {
+   "routed": 128,
+   "shared": 1,
+   "topk": 6
+  },
+  "hidden": 2688,
+  "vocab": 131072,
+  "tensors_bf16": 6513,
+  "tensors_nvfp4": 18487
+ },
+ "measured": {
+  "method": "safetensors \ud5e4\ub354\ub97c HTTP Range \ub85c \uc9c1\uc811 \ud30c\uc2f1 (\uac00\uc911\uce58 \ubbf8\ub2e4\uc6b4\ub85c\ub4dc)",
+  "bf16_payload_bytes": 65826538624,
+  "nvfp4_payload_bytes": 21559589596,
+  "bf16_shards": 14,
+  "nvfp4_shards": 52,
+  "bf16_backbone": {
+   "router": 15838720,
+   "embedding": 704643072,
+   "mamba": 1781953152,
+   "norm": 473344,
+   "routed_experts": 58749616128,
+   "shared_expert": 917962752,
+   "attention": 280756224
+  },
+  "bf16_mtp": {
+   "lm_head": 704643072,
+   "router": 688640,
+   "mtp_projections": 28912128,
+   "attention": 46792704,
+   "norm": 16128,
+   "routed_experts": 2554331136,
+   "shared_expert": 39911424
+  },
+  "nvfp4_backbone": {
+   "mamba": 891687920,
+   "embedding": 704643072,
+   "norm": 473344,
+   "routed_experts": 16523353088,
+   "router": 31665664,
+   "shared_expert": 258177208,
+   "attention": 280756272
+  },
+  "nvfp4_mtp": {
+   "lm_head": 198180868,
+   "router": 688640,
+   "mtp_projections": 28912128,
+   "attention": 46792704,
+   "norm": 16128,
+   "routed_experts": 2554331136,
+   "shared_expert": 39911424
+  }
+ },
+ "reference_author": {
+  "name": "nisten",
+  "site": "https://nisten.github.io/LLMViz-Nemotron-3.5-Lightning-30B-A3B/",
+  "repo": "https://github.com/nisten/LLMViz-Nemotron-3.5-Lightning-30B-A3B",
+  "license": "MIT"
+ },
+ "notes": "\uc6d0\uc791 \uc0ac\uc774\ud2b8\ub294 \ub3d9\uc77c \ubaa8\ub378\uc744 config \uae30\ubc18 \ud574\uc11d \ubaa8\ub378\ub85c \uacc4\uc0b0\ud55c\ub2e4. \ubcf8 \uc0ac\ubcf8\uc740 \uc2dc\uac01/\ub3d9\uc791\uc744 \uadf8\ub300\ub85c \ub450\uace0 CDN \uc758\uc874\ub9cc \uc778\ub77c\uc778\ud654\ud588\ub2e4."
+}
