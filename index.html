@@ -15,9 +15,34 @@
 <meta name="description" content="Interactive 3D architecture explorer for NVIDIA-Nemotron-3.5-Lightning-30B-A3B: 52-layer NemotronH hybrid — 23 Mamba-2 layers, 6 attention layers, 23 pure MoE layers (128 experts, top-6 + shared). BF16 reference vs NVFP4 mixed-precision repos, byte-true volumes." />
 <style>
   html,body{margin:0;padding:0;background:#0A0C0A;height:100%;overflow:hidden}
+
+    .internal-badge {
+        position: fixed;
+        top: 20px;
+        right: -60px;
+        width: 200px;
+        text-align: center;
+        background: #ffeb3b;
+        color: #d32f2f;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 8px 0;
+        transform: rotate(45deg);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        pointer-events: none;
+    }
+    .footer{ 
+      text-align: center; 
+      margin-top: 1.5rem; 
+      color: var(--text-faint); 
+      font-size: 0.75rem; 
+    }
 </style>
 </head>
 <body>
+  <div class="internal-badge">NTT社内用</div>
+
 <div id="root"></div>
 <noscript><div style="color:#EDF3EC;font-family:monospace;padding:2em">This explorer needs JavaScript.</div></noscript>
 <script>/* three.js r128 — MIT, Copyright 2010-2021 Three.js Authors (cdnjs 사본을 파일 내 인라인) */
@@ -1381,5 +1406,6 @@ window.__NM = {
 })();
 </script>
 
+<p class="footer">Copyright NTT Communications China 2026</p>
 </body>
 </html>
