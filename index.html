@@ -1369,7 +1369,7 @@ window.__NM = {
   <label style="display:block;margin-bottom:6px;color:#A9B6A9">Compare a benchmark
     <select id="bench-select" style="display:block;width:100%;margin-top:4px;padding:6px 8px;background:#12180f;color:#E8EDE8;border:1px solid #22301f;border-radius:6px"></select>
   </label>
-  <div id="bench-rows"></div>
+  <p class="card-lede" style="margin:2px 0 0">This comparison set is the frontier leaderboard the original atlas page collected — this checkpoint is not in it, so rows above read &ldquo;Not reported&rdquo; wherever its card publishes nothing. Its own published figures are in the publisher-card table at the bottom of this panel.</p><div id="bench-rows"></div>
   <div id="bench-fine" style="color:#7C8A7C;font-size:11px;margin-top:8px"></div>
   <div id="card-bench"></div>
 </div>
@@ -1383,10 +1383,10 @@ window.__NM = {
     const b = BENCH[i], host = document.getElementById('bench-rows');
     host.innerHTML = MODELS.map(function(name, k){
       const v = b[2][k], w = Math.max(0, Math.min(100, (v || 0)));
-      return '<div style="margin:7px 0"><div style="display:flex;justify-content:space-between;gap:8px">'
-        + '<span style="color:#C8D3C8">' + name + '</span><b style="color:#E8EDE8">' + bar(v) + '</b></div>'
+      var feat = (k === 0); return '<div style="margin:7px 0' + (feat ? ';border:1px solid #2b555b;border-radius:6px;padding:10px 9px;background:#12282e88' : '') + '"><div style="display:flex;justify-content:space-between;gap:8px">'
+        + '<span style="color:' + (feat ? '#55d7c1' : '#C8D3C8') + '">' + name + '</span><b style="color:#E8EDE8">' + bar(v) + '</b></div>'
         + '<div style="height:5px;background:#161d14;border-radius:3px;overflow:hidden;margin-top:3px">'
-        + '<i style="display:block;height:100%;width:' + w + '%;background:' + ACCENT[k % ACCENT.length] + ';opacity:' + (v===null?0.15:0.9) + '"></i></div></div>';
+        + '<i style="display:block;height:100%;width:' + w + '%;background:' + ACCENT[k % ACCENT.length] + ';opacity:' + (feat ? 1 : (v===null?0.15:0.9)) + '"></i></div></div>';
     }).join('');
     document.getElementById('bench-fine').textContent =
       b[0] + ' / ' + b[1] + '. Publisher-reported scores on each benchmark\u2019s own scale; values are not reproduced by this page.';
