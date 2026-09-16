@@ -284,6 +284,16 @@ function App() {
   const [prec, setPrec] = useState("nvfp4");
   const [exUI, setExUI] = useState(true);
   const precRef = useRef("nvfp4"); precRef.current = prec;
+  /* WebMCP: 현재 뷰 상태/선택 제어 훅(읽기 전용 데이터는 모듈 하단에서 노출) */
+  if (typeof window !== "undefined" && window.__NM_ATLAS) {
+    window.__NM_ATLAS.hooks = {
+      state: () => ({ precision: prec, selected: st.selected, hovered: st.hovered,
+        expand: Array.from(st.expand), labels: st.showLabels, spine: st.showSpine,
+        floor: st.floor, explain: st.explain, filters: st.filters }),
+      select: (idx) => { doSelect(idx); return st.selected; },
+      setPrecision: (p) => { setPrec(p); return p; },
+    };
+  }
   const [filters, setFilters] = useState({ norms: true });
   const [mobile, setMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -1342,6 +1352,17 @@ const CSS = `
     .prec button b { display: none; }
   }
 `;
+/* ── WebMCP 데이터 표면(추가분): 화면/렌더링에 관여하지 않고 계산값만 읽기 전용으로 공개 ── */
+window.__NM_ATLAS = {
+  cfg: CFG,
+  layers: LAYERS,
+  stackN: STACK_N,
+  trunkP: TRUNK_P,
+  mtpP: MTP_P,
+  arches: ["embed", "head", "mtp", "nh_mamba", "nh_attn", "nh_moe"],
+  weightsFor: weightsFor,
+  hooks: {},
+};
 render(html`<${App} />`, document.getElementById("root"));
 </script>
 
@@ -1376,7 +1397,7 @@ window.__NM = {
 <script>
 (function(){
   const BENCH = [['GPQA Diamond','Reasoning',[75.44,93.4,94.1,92.9,88.1,92.4,89.9,90.9]],['Terminal-Bench 2.1','Agentic',[24.58,89.1,88.8,88.3,88.2,87.9,82.7,90.6]],['Terminal-Bench 3.0','Agentic',[null,43.3,34.4,17.7,28.3,11.8,7.6,30]],['Terminal-Bench 4.0','Agentic',[null,51.8,39.9,12.6,37.9,12.4,7,31.2]],['DeepSWE v1.1','Agentic',[null,74,73,67.5,66.9,62.7,54.4,74.2]],['ProgramBench','Agentic',[null,37,23,17.5,19,15.5,null,20.3]],['NL2Repo-Bench','Agentic',[null,75.3,56.8,58,58,61.5,54.2,64]],['CyberGym','Agentic',[null,null,84.5,80,84.5,83.3,76.7,88.1]],['SEC-Bench Pro','Agentic',[null,null,74.3,null,null,56.4,30.9,62.8]],['ExploitGym','Agentic',[null,22.1,33.7,null,15,5.4,1.8,15.3]],['HLE with tools','Agentic',[null,63.6,null,59.8,62.5,60,51.5,63.9]],['AutomationBench','Agentic',[null,50.3,45.8,46.7,48.8,43.2,37.7,54.8]],['Agent\'s Last Exam','Agentic',[null,28.6,26.7,27.6,28.5,25.7,25.2,31.8]],['Chartography with tools','Visual',[null,84,79.9,68.1,null,null,null,78.9]],['BabyVision with tools','Visual',[null,94.1,88.9,85.7,null,null,null,89.6]],['ZeroBench-main (Pass@5)','Visual',[null,52,53,41,null,null,null,49]]];
-  const MODELS = ['Nemotron 3.5 Lightning 30B-A3B (this atlas)','Opus-5.0','GPT-5.6 Sol','K3','GLM-5.3','DS V4 Pro','DS V4 Flash','DS V4.1 Flash']; window.CARD_BENCH={"src": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16", "headers": ["Task", "Nemotron-3.5-Lightning-30B-A3B-BF16", "Qwen 3.6 35B A3B", "Gemma 4 26B A4B", "Nemotron 3 Nano", "Nemotron 3 Super", "GPT-OSS 20B"], "rows": [["== General Knowledge", "", "", "", "", "", ""], ["MMLU Pro", "81.94", "85.63", "85.20", "78.46", "83.89", "76.40"], ["== Reasoning", "", "", "", "", "", ""], ["GPQA Diamond (no tools)", "75.44", "83.40", "79.61", "74.05", "78.60", "71.46"], ["HLE (text-only, no tools)", "11.72", "19.56", "17.42", "10.89", "20.30", "13.76"], ["== Coding & Agentic", "", "", "", "", "", ""], ["SWE-bench Verified", "51.56", "70.12", "57.40", "34.08", "63.08", "52.44"], ["SWE-bench Multilingual", "39.33", "63.40", "43.40", "14.07", "49.80", "41.93"], ["Terminal-Bench 2.1", "24.58", "44.38", "37.22", "8.29", "39.61", "15.17"], ["== Instruction Following", "", "", "", "", "", ""], ["IFBench (loose)", "71.88", "63.71", "77.25", "72.17", "71.92", "68.50"], ["== Long Context", "", "", "", "", "", ""]]};
+  const MODELS = ['Nemotron 3.5 Lightning 30B-A3B (this atlas)','Opus-5.0','GPT-5.6 Sol','K3','GLM-5.3','DS V4 Pro','DS V4 Flash','DS V4.1 Flash']; window.__NM_BENCH={BENCH:BENCH,MODELS:MODELS}; window.CARD_BENCH={"src": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16", "headers": ["Task", "Nemotron-3.5-Lightning-30B-A3B-BF16", "Qwen 3.6 35B A3B", "Gemma 4 26B A4B", "Nemotron 3 Nano", "Nemotron 3 Super", "GPT-OSS 20B"], "rows": [["== General Knowledge", "", "", "", "", "", ""], ["MMLU Pro", "81.94", "85.63", "85.20", "78.46", "83.89", "76.40"], ["== Reasoning", "", "", "", "", "", ""], ["GPQA Diamond (no tools)", "75.44", "83.40", "79.61", "74.05", "78.60", "71.46"], ["HLE (text-only, no tools)", "11.72", "19.56", "17.42", "10.89", "20.30", "13.76"], ["== Coding & Agentic", "", "", "", "", "", ""], ["SWE-bench Verified", "51.56", "70.12", "57.40", "34.08", "63.08", "52.44"], ["SWE-bench Multilingual", "39.33", "63.40", "43.40", "14.07", "49.80", "41.93"], ["Terminal-Bench 2.1", "24.58", "44.38", "37.22", "8.29", "39.61", "15.17"], ["== Instruction Following", "", "", "", "", "", ""], ["IFBench (loose)", "71.88", "63.71", "77.25", "72.17", "71.92", "68.50"], ["== Long Context", "", "", "", "", "", ""]]};
   const ACCENT = ['#B8A2FF','#8CA9FF','#43CDA8','#FF7FA5','#C79BFF','#FFB248','#4FC8E8','#9AAABB'];
   function bar(v){ return v===null? 'Not reported' : v.toFixed(1); }
   function render(i){
@@ -1430,5 +1451,423 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 </script>
 
 <p class="footer">Copyright NTT Communications China 2026</p>
+<script>
+/* ── WebMCP 도구 (imperative) — 이 페이지 전용 표면: window.__NM / __NM_ATLAS / __NM_BENCH
+   브라우저 AI 에이전트가 이 아틀라스의 계산값·텐서·벤치마크를 도구로 조회할 수 있게 한다.
+   화면/렌더링에는 관여하지 않는다(읽기 전용 + 선택/정밀도 조작 1종). */
+(function () {
+  'use strict';
+
+  var MC = (typeof navigator !== 'undefined' && navigator.modelContext) ||
+           (typeof document !== 'undefined' && document.modelContext) || null;
+
+  if (!MC || typeof MC.registerTool !== 'function') {
+    window.__WEBMCP_STATUS = 'unsupported-browser';
+    if (typeof console !== 'undefined') {
+      console.info('[WebMCP] 이 브라우저는 WebMCP 를 지원하지 않습니다 (Chrome 149+ 플래그 필요). 도구는 등록되지 않았습니다.');
+    }
+    return;
+  }
+
+  var WAIT_MS = 20000;
+
+  function surface() {
+    return {
+      atlas: window.__NM_ATLAS || null,
+      measured: window.__NM || null,
+      bench: window.__NM_BENCH || null,
+    };
+  }
+
+  function ready() {
+    var s = surface();
+    return !!(s.atlas && s.bench);
+  }
+
+  function waitSurface(timeoutMs) {
+    var t0 = Date.now();
+    return new Promise(function (resolve, reject) {
+      (function poll() {
+        if (ready()) return resolve(surface());
+        if (Date.now() - t0 > (timeoutMs || WAIT_MS)) {
+          return reject(new Error('atlas data not ready (still loading)'));
+        }
+        setTimeout(poll, 120);
+      })();
+    });
+  }
+
+  function ok(v) { return JSON.stringify(v); }
+  function err(msg) { return JSON.stringify({ error: String(msg) }); }
+
+  function allWeights(atlas) {
+    var out = [];
+    var arches = atlas.arches || [];
+    for (var i = 0; i < arches.length; i++) {
+      var a = arches[i];
+      var ws = [];
+      try { ws = atlas.weightsFor(a) || []; } catch (e) { ws = []; }
+      for (var j = 0; j < ws.length; j++) {
+        var w = ws[j];
+        // 이 페이지의 가중치 객체 키: { n, dims, q, cat, count, pM, dt, s }
+        out.push({
+          name: w.n,
+          shape: w.dims,
+          shape_label: w.s,
+          prec: w.q,
+          cat: w.cat,
+          count: w.count,
+          arche: a,
+          params_m: w.pM,
+        });
+      }
+    }
+    return out;
+  }
+
+  function precisionBytes(w, prec) {
+    // bf16 = 2 B, fp8 = 1 B, nvfp4 = 0.5 B (패킹) — 파라미터 수 × 바이트
+    var per = prec === 'bf16' ? 2 : (prec === 'fp8' ? 1 : 0.5);
+    return Math.round((w.params_m || 0) * 1e6 * per);
+  }
+
+  function layersUsing(atlas, arch) {
+    var L = atlas.layers || [];
+    var idx = [];
+    for (var i = 0; i < L.length; i++) if (L[i].arche === arch) idx.push(L[i].idx);
+    return idx;
+  }
+
+  function benchTable(s) {
+    var b = s.bench;
+    if (!b || !b.BENCH) return null;
+    return { rows: b.BENCH, models: b.MODELS || [] };
+  }
+
+  function hasBench() { return !!benchTable(surface()); }
+
+  var tools = [];
+
+  /* 1) 모델 개요 */
+  tools.push({
+    name: 'get_model_overview',
+    description: '이 아틀라스가 시각화하는 모델의 구성 요약(레이어 수·전문가·hidden·어휘)과 정밀도별 실측 payload 크기를 반환한다. 가장 먼저 호출할 도구.',
+    inputSchema: { type: 'object', properties: {}, required: [] },
+    annotations: { readOnlyHint: true },
+    execute: function () {
+      return waitSurface().then(function (s) {
+        var a = s.atlas;
+        // window.__NM = { measured: { model:{...}, measured:{payload}, reference_author, notes }, check() }
+        var nm = (s.measured && s.measured.measured) || {};
+        var info = nm.model || {};
+        var pay = nm.measured || {};
+        var gb = function (b) { return b ? +(b / 1e9).toFixed(3) : null; };
+        return ok({
+          model: info.repo_bf16 || 'this atlas',
+          arch: info.arch || (a.cfg && a.cfg.arch) || null,
+          layers: info.layers || (a.cfg && a.cfg.layers) || a.stackN || null,
+          layer_types: info.layer_types || null,
+          attention_layers: info.attention_layers || null,
+          experts: info.experts || (a.cfg && a.cfg.moe) || null,
+          hidden: info.hidden || (a.cfg && a.cfg.hidden) || null,
+          vocab: info.vocab || (a.cfg && a.cfg.vocab) || null,
+          trunk_params_m: a.trunkP ? +(a.trunkP).toFixed(1) : null,
+          payload: {
+            bf16_gb: gb(pay.bf16_payload_bytes),
+            nvfp4_gb: gb(pay.nvfp4_payload_bytes),
+            bf16_shards: pay.bf16_shards || null,
+            nvfp4_shards: pay.nvfp4_shards || null,
+            tensors_bf16: info.tensors_bf16 || null,
+            tensors_nvfp4: info.tensors_nvfp4 || null,
+          },
+          note: 'payload 는 safetensors 헤더 실측값(가중치 미다운로드).',
+        });
+      }, function (e) { return err(e.message); });
+    },
+  });
+
+  /* 2) 카테고리 */
+  tools.push({
+    name: 'list_categories',
+    description: '이 아틀라스의 레이어 유형(mamba/moe/attention/head/mtp)별 개수와 가중치 범주(norm/router/experts/embed/head) 목록을 반환한다.',
+    inputSchema: { type: 'object', properties: {}, required: [] },
+    annotations: { readOnlyHint: true },
+    execute: function () {
+      return waitSurface().then(function (s) {
+        var a = s.atlas, L = a.layers || [];
+        var byType = {}, byArche = {}, cats = {};
+        for (var i = 0; i < L.length; i++) {
+          byType[L[i].t] = (byType[L[i].t] || 0) + 1;
+          byArche[L[i].arche] = (byArche[L[i].arche] || 0) + 1;
+        }
+        var ws = allWeights(a);
+        for (var j = 0; j < ws.length; j++) cats[ws[j].cat] = (cats[ws[j].cat] || 0) + 1;
+        return ok({
+          layer_types: byType,
+          archetypes: byArche,
+          weight_categories: cats,
+          archetypes_available: a.arches,
+        });
+      }, function (e) { return err(e.message); });
+    },
+  });
+
+  /* 3) 텐서 검색 */
+  tools.push({
+    name: 'search_tensors',
+    description: '가중치(텐서) 이름 부분 일치로 검색한다. 이름·shape·저장 정밀도·범주·사용 레이어 유형을 반환한다.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: '검색어(부분 일치). 예: expert, embed, mamba, norm' },
+        limit: { type: 'number', description: '최대 결과 수(기본 20)' },
+      },
+      required: ['query'],
+    },
+    annotations: { readOnlyHint: true },
+    execute: function (args) {
+      return waitSurface().then(function (s) {
+        var q = String(args.query || '').toLowerCase();
+        if (!q) return err('query required');
+        var lim = Math.max(1, Math.min(200, args.limit || 20));
+        var ws = allWeights(s.atlas);
+        var hit = ws.filter(function (w) {
+          return String(w.name).toLowerCase().indexOf(q) >= 0 || String(w.cat).toLowerCase().indexOf(q) >= 0;
+        });
+        return ok({
+          query: q,
+          total_matches: hit.length,
+          returned: Math.min(hit.length, lim),
+          tensors: hit.slice(0, lim).map(function (w) {
+            return {
+              name: w.name, shape: w.shape, stored_as: w.prec, category: w.cat,
+              archetype: w.arche, params_m: w.params_m,
+              layers: layersUsing(s.atlas, w.arche),
+            };
+          }),
+        });
+      }, function (e) { return err(e.message); });
+    },
+  });
+
+  /* 4) 텐서 상세 */
+  tools.push({
+    name: 'get_tensor_detail',
+    description: '특정 가중치(정확한 이름)의 상세를 반환한다: shape, 저장 정밀도, 범주, 사용 레이어, 정밀도별 크기 추정.',
+    inputSchema: {
+      type: 'object',
+      properties: { name: { type: 'string', description: '가중치 이름(예: model.layers.0.mlp.experts.weight)' } },
+      required: ['name'],
+    },
+    annotations: { readOnlyHint: true },
+    execute: function (args) {
+      return waitSurface().then(function (s) {
+        var name = String(args.name || '');
+        if (!name) return err('name required');
+        var ws = allWeights(s.atlas);
+        var w = null;
+        for (var i = 0; i < ws.length; i++) if (ws[i].name === name) { w = ws[i]; break; }
+        if (!w) {
+          for (var j = 0; j < ws.length; j++) if (String(ws[j].name).toLowerCase() === name.toLowerCase()) { w = ws[j]; break; }
+        }
+        if (!w) return ok({ found: false, name: name, hint: 'search_tensors 로 이름을 먼저 찾아라.' });
+        return ok({
+          found: true,
+          name: w.name,
+          shape: w.shape,
+          stored_as: w.prec,
+          category: w.cat,
+          archetype: w.arche,
+          params_m: w.params_m,
+          layers: layersUsing(s.atlas, w.arche),
+          bytes_by_precision: {
+            bf16: precisionBytes(w, 'bf16'),
+            fp8: precisionBytes(w, 'fp8'),
+            nvfp4: precisionBytes(w, 'nvfp4'),
+          },
+        });
+      }, function (e) { return err(e.message); });
+    },
+  });
+
+  /* 5) 포커스(조작) */
+  tools.push({
+    name: 'focus_tensor',
+    description: '특정 레이어(인덱스) 또는 이름 부분 일치로 해당 레이어를 화면에서 선택/포커스한다. 화면 상태를 바꾼다.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        layer: { type: 'number', description: '레이어 인덱스(-1 이면 선택 해제)' },
+        query: { type: 'string', description: '레이어 이름 부분 일치(예: MIXTURE OF EXPERTS, Layer 12)' },
+      },
+      required: [],
+    },
+    annotations: { readOnlyHint: false, idempotentHint: false, consequentialHint: true },
+    execute: function (args) {
+      return waitSurface().then(function (s) {
+        var a = s.atlas;
+        var hooks = a.hooks || {};
+        var L = a.layers || [];
+        var idx = typeof args.layer === 'number' ? args.layer : null;
+        if (idx === null && args.query) {
+          var q = String(args.query).toLowerCase();
+          for (var i = 0; i < L.length; i++) {
+            if ((String(L[i].label) + ' ' + L[i].t + ' ' + L[i].idx).toLowerCase().indexOf(q) >= 0) { idx = i; break; }
+          }
+        }
+        if (idx === null) return err('layer 또는 query 필요');
+        if (idx < 0) {
+          if (typeof hooks.select === 'function') hooks.select(-1);
+          return ok({ selected: -1, cleared: true });
+        }
+        if (idx >= L.length) return err('레이어 인덱스 범위 초과 (0..' + (L.length - 1) + ')');
+        if (typeof hooks.select !== 'function') return ok({ focused: false, reason: 'view control unavailable' });
+        hooks.select(idx);
+        return ok({
+          focused: true,
+          layer_index: idx,
+          label: L[idx].label,
+          type: L[idx].t,
+          tensors: a.weightsFor(L[idx].arche).map(function (w) {
+            return { name: w.n, shape_label: w.s, stored_as: w.q, category: w.cat, params_m: w.pM };
+          }),
+        });
+      }, function (e) { return err(e.message); });
+    },
+  });
+
+  /* 6) 뷰 상태 */
+  tools.push({
+    name: 'get_view_state',
+    description: '현재 화면 상태를 반환한다: 저장 정밀도(bf16/fp8/nvfp4), 선택된 레이어, 라벨/스파인/바닥 표시, 필터, 펼침 상태.',
+    inputSchema: { type: 'object', properties: {}, required: [] },
+    annotations: { readOnlyHint: true },
+    execute: function () {
+      return waitSurface().then(function (s) {
+        var hooks = (s.atlas.hooks || {});
+        var st = typeof hooks.state === 'function' ? hooks.state() : null;
+        var L = s.atlas.layers || [];
+        return ok({
+          precision: st ? st.precision : null,
+          selected_layer: st && st.selected >= 0 ? { index: st.selected, label: (L[st.selected] || {}).label } : null,
+          hovered_layer: st ? st.hovered : null,
+          show_labels: st ? st.labels : null,
+          show_spine: st ? st.spine : null,
+          show_floor: st ? st.floor : null,
+          explain_open: st ? st.explain : null,
+          filters: st ? st.filters : null,
+          total_layers: L.length,
+        });
+      }, function (e) { return err(e.message); });
+    },
+  });
+
+  /* 7) 벤치마크 목록 */
+  tools.push({
+    name: 'list_benchmarks',
+    description: '이 페이지가 보여주는 벤치마크 목록과 각 벤치마크에서 이 모델의 점수를 반환한다.',
+    inputSchema: { type: 'object', properties: {}, required: [] },
+    annotations: { readOnlyHint: true },
+    execute: function () {
+      return waitSurface().then(function (s) {
+        var t = benchTable(s);
+        if (!t) return err('benchmark table not exposed on this page');
+        var self = t.models[0];
+        return ok({
+          models: t.models,
+          self_model: self,
+          benchmarks: t.rows.map(function (r) {
+            return { benchmark: r[0], category: r[1], self_score: r[2][0], best_among_compared: Math.max.apply(null, r[2].filter(function (v) { return typeof v === 'number'; })) };
+          }),
+        });
+      }, function (e) { return err(e.message); });
+    },
+  });
+
+  /* 8) 모델 비교 */
+  tools.push({
+    name: 'compare_models',
+    description: '지정한 벤치마크에서 모델들의 순위를 계산한다. models 를 주지 않으면 이 모델과 최고 점수를 비교한다.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        benchmark: { type: 'string', description: '벤치마크 이름(부분 일치). 예: GPQA Diamond, DeepSWE v1.1' },
+        models: { type: 'array', items: { type: 'string' }, description: '비교할 모델 이름(부분 일치). 생략 시 [이 모델, 최고 점수 모델]' },
+      },
+      required: ['benchmark'],
+    },
+    annotations: { readOnlyHint: true },
+    execute: function (args) {
+      return waitSurface().then(function (s) {
+        var t = benchTable(s);
+        if (!t) return err('benchmark table not exposed on this page');
+        var q = String(args.benchmark || '').toLowerCase();
+        if (!q) return err('benchmark required');
+        var row = null;
+        for (var i = 0; i < t.rows.length; i++) {
+          if (String(t.rows[i][0]).toLowerCase().indexOf(q) >= 0) { row = t.rows[i]; break; }
+        }
+        if (!row) return err('benchmark not found: ' + args.benchmark);
+        var scored = [];
+        for (var k = 0; k < t.models.length; k++) {
+          if (typeof row[2][k] === 'number') scored.push({ model: t.models[k], score: row[2][k] });
+        }
+        scored.sort(function (a, b) { return b.score - a.score; });
+        var best = scored[0];
+        var detail = scored.map(function (m, i) {
+          return { model: m.model, score: m.score, rank: i + 1, delta_vs_best: +((m.score - best.score).toFixed(2)) };
+        });
+        var want = args.models;
+        if (Array.isArray(want) && want.length) {
+          var picked = [];
+          for (var w = 0; w < want.length; w++) {
+            var needle = String(want[w]).toLowerCase();
+            for (var d = 0; d < detail.length; d++) {
+              if (detail[d].model.toLowerCase().indexOf(needle) >= 0) { picked.push(detail[d]); break; }
+            }
+          }
+          var pair = {};
+          if (picked.length >= 2) {
+            pair = {
+              a: picked[0].model, b: picked[1].model,
+              a_score: picked[0].score, b_score: picked[1].score,
+              delta: +((picked[0].score - picked[1].score).toFixed(2)),
+              relative_pct: picked[1].score ? +(((picked[0].score - picked[1].score) / picked[1].score) * 100).toFixed(1) : null,
+              leader: picked[0].score === picked[1].score ? 'tie' : picked[0].model,
+            };
+          }
+          return ok({ benchmark: row[0], category: row[1], selected: picked, head_to_head: pair, ranking: detail, leader: best.model });
+        }
+        return ok({ benchmark: row[0], category: row[1], reported_models: scored.length, ranking: detail, leader: best.model });
+      }, function (e) { return err(e.message); });
+    },
+  });
+
+  var registered = [];
+  for (var i = 0; i < tools.length; i++) {
+    var t = tools[i];
+    try {
+      MC.registerTool(t);
+      registered.push(t.name);
+    } catch (e) {
+      if (typeof console !== 'undefined') console.warn('[WebMCP] 도구 등록 실패:', t.name, e && e.message);
+    }
+  }
+
+  window.__WEBMCP_STATUS = 'registered (' + registered.length + ' tools)';
+  window.__WEBMCP_TOOLS = registered;
+  window.__WEBMCP_SURFACE = {
+    api: (typeof navigator !== 'undefined' && navigator.modelContext) ? 'navigator.modelContext' : 'document.modelContext',
+    registerTool: typeof MC.registerTool,
+    executeTool: typeof MC.executeTool,
+  };
+  if (typeof console !== 'undefined') {
+    console.info('[WebMCP] ' + window.__WEBMCP_STATUS + ' — ' + registered.join(', '));
+  }
+  if (typeof window !== 'undefined') {
+    window.__WEBMCP_READY = true;
+  }
+})();
+</script>
 </body>
 </html>
